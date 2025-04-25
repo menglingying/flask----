@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}创建活动 - 慈善机构{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>创建新活动</h1>
+</div>
+
+<div class="form-container">
+    <form method="post" action="{{ url_for('charity.create_event') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">活动名称</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">活动描述</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="location">活动地点</label>
+            <input type="text" id="location" name="location" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="start_time">开始时间</label>
+            <input type="datetime-local" id="start_time" name="start_time" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="end_time">结束时间</label>
+            <input type="datetime-local" id="end_time" name="end_time" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="required_skills">所需技能（可选）</label>
+            <textarea id="required_skills" name="required_skills" rows="3"></textarea>
+            <small>请列出参与此活动所需的技能，每行一个</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="files">上传文件（可选）</label>
+            <input type="file" id="files" name="files" multiple>
+            <small>可以上传多个文件，支持的格式：PNG, JPG, JPEG, GIF, PDF, DOC, DOCX</small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn primary">创建活动</button>
+            <a href="{{ url_for('charity.dashboard') }}" class="btn secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 表单验证
+        $('form').submit(function(e) {
+            const startTime = new Date($('#start_time').val());
+            const endTime = new Date($('#end_time').val());
+            const now = new Date();
+            
+            // 验证开始时间是否晚于当前时间
+            if (startTime < now) {
+                e.preventDefault();
+                alert('开始时间不能早于当前时间');
+                return false;
+            }
+            
+            // 验证结束时间是否晚于开始时间
+            if (endTime <= startTime) {
+                e.preventDefault();
+                alert('结束时间必须晚于开始时间');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

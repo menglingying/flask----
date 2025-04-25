@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}统计数据 - 管理员{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>统计数据</h1>
+</div>
+
+<div class="dashboard-section">
+    <h2>用户增长</h2>
+    <div class="chart-container">
+        <canvas id="userGrowthChart"></canvas>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>活动统计</h2>
+    <div class="chart-container">
+        <canvas id="eventStatsChart"></canvas>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>注册统计</h2>
+    <div class="chart-container">
+        <canvas id="registrationStatsChart"></canvas>
+    </div>
+</div>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn secondary">返回仪表盘</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 用户增长图表
+        const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+        const userGrowthChart = new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: [{% for item in user_growth %}{% if loop.index0 > 0 %}, {% endif %}'{{ item.month }}'{% endfor %}],
+                datasets: [
+                    {
+                        label: '志愿者',
+                        data: [{% for item in user_growth %}{% if loop.index0 > 0 %}, {% endif %}{% if item.user_type == 'volunteer' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.1
+                    },
+                    {
+                        label: '慈善机构',
+                        data: [{% for item in user_growth %}{% if loop.index0 > 0 %}, {% endif %}{% if item.user_type == 'charity' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '用户增长趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // 活动统计图表
+        const eventStatsCtx = document.getElementById('eventStatsChart').getContext('2d');
+        const eventStatsChart = new Chart(eventStatsCtx, {
+            type: 'bar',
+            data: {
+                labels: [{% for item in event_stats %}{% if loop.index0 > 0 %}, {% endif %}'{{ item.month }}'{% endfor %}],
+                datasets: [
+                    {
+                        label: '待审核',
+                        data: [{% for item in event_stats %}{% if loop.index0 > 0 %}, {% endif %}{% if item.status == 'pending' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '已批准',
+                        data: [{% for item in event_stats %}{% if loop.index0 > 0 %}, {% endif %}{% if item.status == 'approved' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '已拒绝',
+                        data: [{% for item in event_stats %}{% if loop.index0 > 0 %}, {% endif %}{% if item.status == 'rejected' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '已完成',
+                        data: [{% for item in event_stats %}{% if loop.index0 > 0 %}, {% endif %}{% if item.status == 'completed' %}{{ item.count }}{% else %}0{% endif %}{% endfor %}],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '活动统计'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // 注册统计图表
+        const registrationStatsCtx = document.getElementById('registrationStatsChart').getContext('2d');
+        const registrationStatsChart = new Chart(registrationStatsCtx, {
+            type: 'line',
+            data: {
+                labels: [{% for item in registration_stats %}{% if loop.index0 > 0 %}, {% endif %}'{{ item.month }}'{% endfor %}],
+                datasets: [
+                    {
+                        label: '注册数量',
+                        data: [{% for item in registration_stats %}{% if loop.index0 > 0 %}, {% endif %}{{ item.count }}{% endfor %}],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '志愿者注册趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

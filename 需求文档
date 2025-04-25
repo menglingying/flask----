@@ -1,0 +1,233 @@
+Web Application Development: Coursework
+Allocation
+This coursework is worth 100% of the marks for module CHC5054.
+You will also need skills from the following modules:
+●CHC4008 (Python Programming)
+●CHC4007 (Design reporting)
+●CHC5049 (Database design)
+●CHC5226 (Secure implementation)
+Specification
+Your task is to develop and test the full stack for a simple web-based Volunteer and Charity Platform to connect volunteers with charitable organisations. It allows:
+Volunteers to browse and register for opportunities. 
+Charities to post and manage projects.
+Administrators to oversee platform operations. 
+The primary goal is to simplify volunteer coordination and charity event management while ensuring a user-friendly experience for all parties involved. The following is the basic functionality to implement:
+●Home Page: The homepage introduces the platform’s mission and purpose, offering users a quick overview of available volunteer opportunities and featured charities. It provides a welcoming entry point for users to learn about the platform and explore available events. Users can access these events by clicking on them, each one should have a name, begin & end date/time, and location
+●Login/Sign-Up Page: This page allows users to log in to their existing accounts or sign up for a new one. Volunteers can create personal profiles, while charities can register to post events and manage their organisational details, administrators should have different page for login only.
+Admin:
+Dashboard: offers an overview of statistics, such as the number of volunteer registrations, and charity events.
+User Management Page: allows admins to view, approve, or suspend user accounts (both volunteers and charities). 
+Event Approval Page: review and approve charity events before they are posted publicly.
+Volunteer:
+
+Dashboard Page: displays an overview of the volunteer’s activities. It includes upcoming events, the start/end time & date, the number of hours contributed, and recent notifications, providing a summary of the volunteer's progress and upcoming commitments.
+Events Page: displays a list of all available volunteer opportunities. Volunteers can filter events by cause, location, date and time. Each event can be clicked for further details.
+Event Details Page: provides full information about a specific volunteer event, including the event description, required skills, date and time. It allows volunteers to read the full requirements and register for the event if they wish to participate.
+My Events Page: It lists both upcoming and past events, with status updates (e.g. upcoming, completed). Volunteers can also see any updates or changes made by the charity to these events. 
+Charity:
+
+Charity Dashboard: Main control centre for charities to manage their activities. It shows an overview of all upcoming events, volunteer sign-ups, and engagement, helping charities track the success of their volunteer programmes.
+Event Creation Page: Allows charities to create new volunteer events by providing key details, such as the event name, description, date, location, and required skills. Charities can also upload files or additional resources related to the event.
+Event Management Page: enables charities to edit or update the details of their posted events, such as adjusting participant numbers or changing event dates. Charities can also view the list of volunteers who have signed up for each event.
+Volunteer Applications Page: This page shows a list of volunteers who have applied for a charity's events. Charities can review each volunteer’s profile and either approve or reject their application, based on the volunteer’s suitability for the event.
+The marks available for each of these areas of functionality are divided based on the sections of the coursework, as described below. Simply writing code to meet the specification by any means will not earn full marks.
+Restrictions
+Your web site must run in a Python virtual environment built by running the following commands from a Command Prompt in a suitable working directory:
+pip install virtualenv
+virtualenv webtest
+cd webtest
+scripts\activate
+pip install flask mysql-connector-python
+It is recommended that you also use this virtual environment for development. Regardless, you must test your site within the virtual environment before submitting it. This is the virtual environment in which your code will be tested by the assessor. If it does not work, marks will not be awarded.
+In addition to the libraries in the above virtual environment, you may use the jQuery library for JavaScript, but may not use any other frameworks or libraries. This means that you may not use libraries that are “Flask extensions” if they are not installed with Flask.
+(Please do not send e-mails asking if you can use other extension libraries; the answer is no. The purpose of the coursework is to understand how JavaScript and server interaction work at the lowest level possible, not in terms of abstractions created by higher level code.)
+Your website must be built using HTML 5 and ECMAscript 6 on the client, and Flask, MySQL and Python 3 on the server.
+
+
+Plagiarism
+This is individual work. You must not copy or share code with other students. Do not copy code from online sources, answers, tutorials or existing open-source software. Copied code will result in the plagiarism process being invoked and you may be asked to attend an online meeting to verify that your understanding of your code is consistent with you having written it.
+You must be very careful with the use of online tutorials on this module. Your primary learning source should be the module notes and the lecturer and tutorial staff. There are a very large number of online tutorials on the topic of web development, but many are incorrect, out-of-date, or badly written.
+Sites which present code and then explain it are often cheating sites, not tutorials. Retroactively explaining large amounts of code is not an effective learning method, but is often used as a trick to “justify” presenting code actually intended to be cut and pasted. Often the explanations are extremely poor or even incorrect and will confuse your understanding further.
+Use of Pre-Written Comments for Explanation is Not Allowed.
+Students are not permitted to rely on reading large pre-written comments (in English or Chinese) to explain their code. Explanations must be given in the student's own words, demonstrating a genuine understanding of the code’s functionality. Using comments in this way will not be accepted and will negatively affect the evaluation.
+AI-Generated Text in Reports:
+AI-generated content in the report will result in a penalty to the student's marks and may be considered academic misconduct. Students are expected to produce original, self-written work.
+
+
+
+1.Login Page
+
+Client: 
+1.HTML5 + CSS：
+Builds a login form with fields for username and password, and applies basic styling to ensure clarity and ease of use.
+2.JavaScript (ECMAScript 6) + jQuery：
+Click the “Login” button to access the login page. Click the “Administrator Login” button to access the administrator login page. Send a POST request to the backend via AJAX.
+Server:
+Flask + MySQL + render_template + flash + request
+POST request for /login route. Use MySQL select query to validate username and password against user table. Use flash to display error messages (e.g. “Incorrect password”). After a successful connection, the user's identity will be recorded using the session.
+
+
+
+
+
+
+
+2.Volunteer Registration Page
+
+Client: 
+1.HTML5 + CSS：
+Build form input boxes (Name, Email, Gender, Password, Confirm Password)
+2.JavaScript + jQuery：
+Monitor the registration button and dynamically verify the input format (such as password matching). Send a POST request via AJAX.
+Server:
+Flask + MySQL：
+POST request to /register_volunteer. Insert data into the Users and Volunteers tables using MySQL INSERT command. The password is encrypted and stored using the function generate_password_hash.
+
+3.Charity Registration Page
+
+Client:
+
+1.HTML5 + CSS：
+Form input boxes (institution name, address, description, password, confirmation password)
+2.JavaScript + jQuery：
+Listen to the registration button and perform form validation. Send a POST request via AJAX.
+Server:
+Flask + MySQL：
+POST request to /register_charity. Insert data into the Users and Charities tables using MySQL INSERT command.The password is encrypted and stored using the function generate_password_hash.
+
+4.Volunteer Dashboard
+
+Client:
+
+1.HTML5 + CSS：
+Layout display: cumulative volunteer hours, upcoming activities to participate in, total number of activities.
+2.JavaScript + jQuery：
+Listen and display all events using AJAX to retrieve data. Listen to my events. Load events that I have registered for.
+
+Server:
+Flask + MySQL：
+GET request to /volunteer/dashboard. Use the MySQL SELECT query to retrieve the registration records of the volunteer from the Registrations table. Provide an API for the front-end AJAX to obtain data.
+
+5.Volunteer Events Page
+
+
+Client:
+
+1.HTML5 + CSS：
+Offer activity filtering options (by type, time, location)
+2.JavaScript + jQuery：
+The list of activities is filtered and loaded dynamically. Click on the “Request activity details” button to load detailed activity data.
+Server:
+Flask + MySQL：
+GET request to /volunteer/events. Query the "Events" table and return the list of activities that meet the specified conditions.
+
+
+
+
+
+
+6.Volunteer All Events Page
+
+
+Client:
+1.HTML5 + CSS: 
+Create lists of events with filtering options based on category, date and location.
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Use AJAX ($.get()) to dynamically retrieve event data without reloading the entire page. Select (event type, date, location) with filters to dynamically update the event list. When the user clicks on “Show Details,” the event information is retrieved and dynamically displayed.
+Server:
+Flask + MySQL + render_template + flash + request 
+GET request to /volunteer/events: Queries the Events table to fetch active events that match filtering criteria.Uses jsonify() to return data for AJAX-based dynamic rendering.Handles AJAX filtering (/api/events?category=...&date=...): Uses query parameters to return filtered event results.
+
+
+7.Volunteer My Events Page
+
+Client:
+1.HTML5 + CSS: 
+Displays the list of events the volunteer has registered for, categorized as upcoming or completed.
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Uses AJAX ($.get()) to dynamically fetch the user’s registered events.Filters events by status (upcoming/completed) using client-side JavaScript.Listens for "Cancel Registration" button clicks and sends an AJAX POST request to remove the volunteer from an event.
+Server:
+Flask + MySQL + render_template + flash + request 
+GET request to /volunteer/my_events: Queries Registrations and Events tables to retrieve the user’s registered events.Returns JSON data for AJAX-based updates.POST request to /volunteer/cancel_registration: Validates the request and removes the user’s registration from the Registrations table.Uses flash() to provide feedback on successful cancellation.
+
+
+8.Charity dashboard
+Client:
+1.HTML5 + CSS: 
+Structures the dashboard layout, displaying key metrics such as upcoming events, total volunteers, and engagement statistics.
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Uses AJAX ($.get()) to dynamically retrieve charity-related statistics without requiring a page reload.Monitors "Manage Events" and "View Volunteer Applications" buttons to load relevant sections dynamically.Updates DOM elements with real-time data (e.g., event participation statistics).
+Server:
+Flask + MySQL + render_template + flash + request 
+GET request to /charity/dashboard: Queries the Events table to fetch the charity’s currently active and past events.Retrieves volunteer participation metrics and engagement data.Renders data dynamically using render_template().Handles API requests (/api/charity/stats): Returns JSON responses containing charity statistics for AJAX-based updates.
+
+9.Charity Event Creation Page
+Client:
+1.HTML5 + CSS: 
+2.Provides an event creation form with fields such as event name, description, date, location, required skills, and an option to upload files
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Uses AJAX ($.post()) to send event creation data to the server.Implements client-side form validation to ensure required fields are filled before submission.Supports file uploads using FormData() and AJAX.
+Server:
+Flask + MySQL + render_template + flash + request 
+POST request to /charity/create_event: Captures form data and validates required fields.Stores event information in the Events table using MySQL INSERT.Handles file uploads, saving them to a designated storage location.Uses flash() to provide feedback on successful event creation.
+
+10.Charity Event Management Page
+Client:
+1.HTML5 + CSS: 
+This displays a list of all events created by the charity, with the status of the event, the number of registered volunteers, and the ability to edit or delete the event.
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Uses AJAX ($.get()) to dynamically get and display events. Allows editing of event details using built-in input forms and AJAX PUT requests to update. Supports deletion of events using AJAX DELETE requests to remove events from the system.
+Server:
+Flask + MySQL + render_template + flash + request 
+GET request to /charity/events: Queries Events table to retrieve all events created by the charity.PUT request to /charity/update_event: Processes event updates and modifies the existing record in the Events table.DELETE request to /charity/delete_event: Removes the specified event from the Events table and cleans up associated registrations.
+11.Charity Volunteer Applications Page
+
+Client:
+1.HTML5 + CSS: 
+Displays a list of volunteers who have applied to participate in charity-hosted events, showing their details, skills, and previous experience.
+2.JavaScript (ECMAScript 6) + jQuery + DOM Manipulation: 
+Uses AJAX ($.get()) to fetch volunteer application data dynamically.Provides "Approve" and "Reject" buttons for each application, sending corresponding AJAX POST requests to the server.
+Server:
+Flask + MySQL + render_template + flash + request 
+Get requests to/from charity/volunteer: query the registration table and user table to get requests from volunteers. Send request to /charity/approve_volunteer: updates the registration form and marks the volunteer as “approved”. send request to/charity/reject_volunteer: removes the volunteer's request from the registration.
+
+12.Admin dashboard
+
+Client:
+
+1.HTML5 + CSS：
+Displays key statistics such as the number of volunteers, charities, events, and active users, with a clean and organized layout for easy data interpretation.
+2.JavaScript + jQuery：
+Implements AJAX to dynamically load data when the Manage Users/Events button is clicked. It also listens for updates to the Latest Events, retrieving details as needed.
+Server:
+Flask + MySQL：
+GET request to /admin/dashboard queries the Users, Charities, and Events tables to retrieve statistical data.Provides an API for the front-end to obtain and display updated user and event information via AJAX.
+
+
+13.Event Management Page
+
+
+Client:
+
+1.HTML5 + CSS：
+Displays a list of events created by the charity, including key details like event name, description, date, and the number of volunteer applicants. The design is clean and responsive for ease of viewing.
+2.JavaScript + jQuery：
+Implements AJAX to dynamically load event data and handle edit and delete actions. When an event’s details need updating or deletion, the corresponding buttons trigger AJAX requests to the server.
+
+Server:
+Flask + MySQL：
+GET request to /charity/events fetches all events created by the charity from the MySQL database.POST request to /charity/update_event is used to update event details, such as date, description, and participant count.
+
+14.Event Approval Page
+
+
+Client:
+
+1.HTML5 + CSS：
+Displays filters for submission date, organization name, and status, styled for user-friendliness.
+2.JavaScript + jQuery：
+Uses AJAX to dynamically filter events based on selected criteria and update the event list without page reload.Implements Approve and Reject buttons for each event, sending requests to update the status.
+Server:
+Flask + MySQL：
+GET request to /admin/event_approvals retrieves pending event approvals from the database.POST request processes approval or rejection, updating the event status in MySQL.
+

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}浏览活动 - 志愿者{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>浏览志愿活动</h1>
+</div>
+
+<div class="filter-form">
+    <h3>筛选活动</h3>
+    <form method="get" action="{{ url_for('volunteer.events') }}">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="location">地点</label>
+                <select id="location" name="location">
+                    <option value="">所有地点</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc }}" {% if current_location == loc %}selected{% endif %}>{{ loc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="start_date">开始日期</label>
+                <input type="date" id="start_date" name="start_date" value="{{ current_start_date }}">
+            </div>
+            <div class="filter-group">
+                <label for="end_date">结束日期</label>
+                <input type="date" id="end_date" name="end_date" value="{{ current_end_date }}">
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">筛选</button>
+            <a href="{{ url_for('volunteer.events') }}" class="btn secondary">重置</a>
+        </div>
+    </form>
+</div>
+
+<div class="events-list">
+    {% if events %}
+        <div class="events-grid">
+            {% for event in events %}
+                <div class="event-card">
+                    <h3>{{ event.name }}</h3>
+                    <p class="event-charity">由 {{ event.charity_name }} 组织</p>
+                    <p class="event-time">
+                        <span class="icon">📅</span> {{ format_datetime(event.start_time) }} - {{ format_datetime(event.end_time) }}
+                    </p>
+                    <p class="event-location"><span class="icon">📍</span> {{ event.location }}</p>
+                    <div class="event-description">
+                        {{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}
+                    </div>
+                    <a href="{{ url_for('volunteer.event_details', event_id=event.id) }}" class="btn small">查看详情</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">没有找到符合条件的活动</p>
+    {% endif %}
+</div>
+{% endblock %}

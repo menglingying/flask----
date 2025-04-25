@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Charity Platform{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h1>User Login</h1>
+    <div class="auth-tabs">
+        <button class="auth-tab active" id="user-login-tab">User Login</button>
+        <button class="auth-tab" id="admin-login-tab">Admin Login</button>
+    </div>
+
+    <div class="auth-form" id="user-login-form">
+        <form method="post" action="{{ url_for('main.login') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Login</button>
+            </div>
+        </form>
+        <div class="auth-links">
+            <p>Don't have an account? <a href="{{ url_for('main.register_volunteer') }}">Register as Volunteer</a> or <a href="{{ url_for('main.register_charity') }}">Register as Organization</a></p>
+        </div>
+    </div>
+
+    <div class="auth-form hidden" id="admin-login-form">
+        <form method="post" action="{{ url_for('main.admin_login') }}">
+            <div class="form-group">
+                <label for="admin-username">Admin Username</label>
+                <input type="text" id="admin-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-password">Admin Password</label>
+                <input type="password" id="admin-password" name="password" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Admin Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 切换登录表单
+        $('#user-login-tab').click(function() {
+            $(this).addClass('active');
+            $('#admin-login-tab').removeClass('active');
+            $('#user-login-form').removeClass('hidden');
+            $('#admin-login-form').addClass('hidden');
+        });
+
+        $('#admin-login-tab').click(function() {
+            $(this).addClass('active');
+            $('#user-login-tab').removeClass('active');
+            $('#admin-login-form').removeClass('hidden');
+            $('#user-login-form').addClass('hidden');
+        });
+    });
+</script>
+{% endblock %}

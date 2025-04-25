@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} - 活动详情{% endblock %}
+
+{% block content %}
+<div class="event-detail">
+    <div class="event-detail-header">
+        <h1>{{ event.name }}</h1>
+        <div class="event-status">
+            <span class="status-badge status-{{ event.status }}">
+                {% if event.status == 'pending' %}
+                    待审核
+                {% elif event.status == 'approved' %}
+                    已批准
+                {% elif event.status == 'rejected' %}
+                    已拒绝
+                {% elif event.status == 'completed' %}
+                    已完成
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <div class="event-detail-info">
+        <p><strong>时间：</strong> {{ format_datetime(event.start_time) }} - {{ format_datetime(event.end_time) }}</p>
+        <p><strong>地点：</strong> {{ event.location }}</p>
+        {% if event.required_skills %}
+            <p><strong>所需技能：</strong> {{ event.required_skills }}</p>
+        {% endif %}
+        <p><strong>创建时间：</strong> {{ format_datetime(event.created_at) }}</p>
+    </div>
+    
+    <div class="event-detail-description">
+        <h2>活动描述</h2>
+        <p>{{ event.description }}</p>
+    </div>
+    
+    <div class="event-detail-actions">
+        <a href="{{ url_for('charity.update_event', event_id=event.id) }}" class="btn primary">编辑活动</a>
+        <form action="{{ url_for('charity.delete_event', event_id=event.id) }}" method="post" style="display: inline;" onsubmit="return confirm('确定要删除此活动吗？此操作不可撤销。');">
+            <button type="submit" class="btn secondary">删除活动</button>
+        </form>
+        <a href="{{ url_for('charity.events') }}" class="btn secondary">返回活动列表</a>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>注册的志愿者</h2>
+    {% if registrations %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>志愿者姓名</th>
+                    <th>邮箱</th>
+                    <th>注册时间</th>
+                    <th>状态</th>
+                    <th>贡献小时数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                    <tr>
+                        <td>{{ reg.volunteer_name }}</td>
+                        <td>{{ reg.email }}</td>
+                        <td>{{ format_datetime(reg.registered_at) }}</td>
+                        <td>
+                            <span class="status-badge status-{{ reg.status }}">
+                                {% if reg.status == 'pending' %}
+                                    待审核
+                                {% elif reg.status == 'approved' %}
+                                    已批准
+                                {% elif reg.status == 'rejected' %}
+                                    已拒绝
+                                {% elif reg.status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ reg.hours_contributed }}</td>
+                        <td>
+                            {% if reg.status == 'pending' %}
+                                <form action="{{ url_for('charity.approve_volunteer', registration_id=reg.id) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn small">批准</button>
+                                </form>
+                                <form action="{{ url_for('charity.reject_volunteer', registration_id=reg.id) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn small">拒绝</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无注册的志愿者</p>
+    {% endif %}
+</div>
+{% endblock %}

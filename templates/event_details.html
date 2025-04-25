@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} - Event Details{% endblock %}
+
+{% block content %}
+<div class="event-detail">
+    <h1>{{ event.name }}</h1>
+
+    <div class="event-detail-info">
+        <p><strong>Organizer:</strong> {{ event.charity_name }}</p>
+        <p><strong>Time:</strong> {{ format_datetime(event.start_time) }} - {{ format_datetime(event.end_time) }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        {% if event.required_skills %}
+            <p><strong>Required Skills:</strong> {{ event.required_skills }}</p>
+        {% endif %}
+    </div>
+
+    <div class="event-detail-description">
+        <h2>Event Description</h2>
+        <p>{{ event.description }}</p>
+    </div>
+
+    <div class="event-detail-actions">
+        {% if session.user_type == 'volunteer' %}
+            {% if is_registered %}
+                <p class="registered-message">You have registered for this event</p>
+            {% else %}
+                <form action="{{ url_for('volunteer.register_event', event_id=event.id) }}" method="post">
+                    <button type="submit" class="btn primary">Register</button>
+                </form>
+            {% endif %}
+        {% elif not session.user_id %}
+            <a href="{{ url_for('main.login') }}" class="btn primary">Login to Register</a>
+            <a href="{{ url_for('main.register_volunteer') }}" class="btn secondary">Register as Volunteer</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

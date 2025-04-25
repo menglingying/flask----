@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}编辑活动 - 慈善机构{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>编辑活动</h1>
+</div>
+
+<div class="form-container">
+    <form method="post" action="{{ url_for('charity.update_event', event_id=event.id) }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">活动名称</label>
+            <input type="text" id="name" name="name" value="{{ event.name }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">活动描述</label>
+            <textarea id="description" name="description" rows="5" required>{{ event.description }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="location">活动地点</label>
+            <input type="text" id="location" name="location" value="{{ event.location }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="start_time">开始时间</label>
+            <input type="datetime-local" id="start_time" name="start_time" value="{{ event.start_time.strftime('%Y-%m-%dT%H:%M') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="end_time">结束时间</label>
+            <input type="datetime-local" id="end_time" name="end_time" value="{{ event.end_time.strftime('%Y-%m-%dT%H:%M') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="required_skills">所需技能（可选）</label>
+            <textarea id="required_skills" name="required_skills" rows="3">{{ event.required_skills }}</textarea>
+            <small>请列出参与此活动所需的技能，每行一个</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="files">上传文件（可选）</label>
+            <input type="file" id="files" name="files" multiple>
+            <small>可以上传多个文件，支持的格式：PNG, JPG, JPEG, GIF, PDF, DOC, DOCX</small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn primary">保存更改</button>
+            <a href="{{ url_for('charity.event_details', event_id=event.id) }}" class="btn secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 表单验证
+        $('form').submit(function(e) {
+            const startTime = new Date($('#start_time').val());
+            const endTime = new Date($('#end_time').val());
+            
+            // 验证结束时间是否晚于开始时间
+            if (endTime <= startTime) {
+                e.preventDefault();
+                alert('结束时间必须晚于开始时间');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

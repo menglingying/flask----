@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}志愿者仪表盘{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>欢迎回来，{{ volunteer.name }}</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_events }}</div>
+        <div class="stat-label">已参与活动</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total_hours }}</div>
+        <div class="stat-label">志愿服务小时</div>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>即将到来的活动</h2>
+    {% if upcoming_events %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>活动名称</th>
+                    <th>慈善机构</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in upcoming_events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.charity_name }}</td>
+                        <td>{{ format_datetime(event.start_time) }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>
+                            <span class="status-badge status-{{ event.registration_status }}">
+                                {% if event.registration_status == 'pending' %}
+                                    待审核
+                                {% elif event.registration_status == 'approved' %}
+                                    已批准
+                                {% elif event.registration_status == 'rejected' %}
+                                    已拒绝
+                                {% elif event.registration_status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('volunteer.event_details', event_id=event.id) }}" class="btn small">查看详情</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无即将到来的活动</p>
+    {% endif %}
+    
+    <div class="dashboard-actions">
+        <a href="{{ url_for('volunteer.events') }}" class="btn primary">浏览更多活动</a>
+        <a href="{{ url_for('volunteer.my_events') }}" class="btn secondary">查看我的所有活动</a>
+    </div>
+</div>
+{% endblock %}

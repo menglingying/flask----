@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Charity Platform{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Connecting Volunteers with Charitable Organizations</h1>
+        <p>Our platform aims to simplify volunteer coordination and charity event management, providing a user-friendly experience for all participants.</p>
+        {% if not session.user_id %}
+            <div class="hero-buttons">
+                <a href="{{ url_for('main.register_volunteer') }}" class="btn primary">Become a Volunteer</a>
+                <a href="{{ url_for('main.register_charity') }}" class="btn secondary">Register Organization</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="upcoming-events">
+    <h2>Upcoming Events</h2>
+    {% if upcoming_events %}
+        <div class="events-grid">
+            {% for event in upcoming_events %}
+                <div class="event-card">
+                    <h3>{{ event.name }}</h3>
+                    <p class="event-charity">Organized by {{ event.charity_name }}</p>
+                    <p class="event-time">
+                        <span class="icon">📅</span> {{ format_datetime(event.start_time) }} - {{ format_datetime(event.end_time) }}
+                    </p>
+                    <p class="event-location"><span class="icon">📍</span> {{ event.location }}</p>
+                    <a href="{{ url_for('main.event_details', event_id=event.id) }}" class="btn small">View Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">No upcoming events at the moment</p>
+    {% endif %}
+</section>
+
+<section class="featured-charities">
+    <h2>Featured Organizations</h2>
+    {% if featured_charities %}
+        <div class="charities-grid">
+            {% for charity in featured_charities %}
+                <div class="charity-card">
+                    <h3>{{ charity.name }}</h3>
+                    <p class="charity-address"><span class="icon">📍</span> {{ charity.address }}</p>
+                    <p class="charity-description">{{ charity.description[:100] }}{% if charity.description|length > 100 %}...{% endif %}</p>
+                    <p class="charity-events">Organized {{ charity.event_count }} events</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">No featured organizations at the moment</p>
+    {% endif %}
+</section>
+
+<section class="platform-info">
+    <h2>About Our Platform</h2>
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>For Volunteers</h3>
+            <p>Browse and register for volunteer opportunities, track your contributions, and connect with charitable organizations.</p>
+        </div>
+        <div class="info-card">
+            <h3>For Organizations</h3>
+            <p>Post and manage projects, recruit volunteers, and expand your impact.</p>
+        </div>
+        <div class="info-card">
+            <h3>Simple Coordination</h3>
+            <p>Our platform simplifies volunteer coordination and charity event management, providing a user-friendly experience for all participants.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

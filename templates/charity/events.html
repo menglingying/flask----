@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}活动管理 - 慈善机构{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>活动管理</h1>
+    <a href="{{ url_for('charity.create_event') }}" class="btn primary">创建新活动</a>
+</div>
+
+<div class="dashboard-section">
+    <h2>所有活动</h2>
+    {% if events %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>活动名称</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>状态</th>
+                    <th>注册人数</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ format_datetime(event.start_time) }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>
+                            <span class="status-badge status-{{ event.status }}">
+                                {% if event.status == 'pending' %}
+                                    待审核
+                                {% elif event.status == 'approved' %}
+                                    已批准
+                                {% elif event.status == 'rejected' %}
+                                    已拒绝
+                                {% elif event.status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ event.registration_count }}</td>
+                        <td>{{ format_datetime(event.created_at) }}</td>
+                        <td>
+                            <a href="{{ url_for('charity.event_details', event_id=event.id) }}" class="btn small">查看详情</a>
+                            <a href="{{ url_for('charity.update_event', event_id=event.id) }}" class="btn small">编辑</a>
+                            <form action="{{ url_for('charity.delete_event', event_id=event.id) }}" method="post" style="display: inline;" onsubmit="return confirm('确定要删除此活动吗？此操作不可撤销。');">
+                                <button type="submit" class="btn small">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无活动</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('charity.dashboard') }}" class="btn secondary">返回仪表盘</a>
+</div>
+{% endblock %}

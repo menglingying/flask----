@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} - 活动详情{% endblock %}
+
+{% block content %}
+<div class="event-detail">
+    <h1>{{ event.name }}</h1>
+    
+    <div class="event-detail-info">
+        <p><strong>组织者：</strong> {{ event.charity_name }}</p>
+        <p><strong>时间：</strong> {{ format_datetime(event.start_time) }} - {{ format_datetime(event.end_time) }}</p>
+        <p><strong>地点：</strong> {{ event.location }}</p>
+        {% if event.required_skills %}
+            <p><strong>所需技能：</strong> {{ event.required_skills }}</p>
+        {% endif %}
+    </div>
+    
+    <div class="event-detail-description">
+        <h2>活动描述</h2>
+        <p>{{ event.description }}</p>
+    </div>
+    
+    <div class="event-detail-charity">
+        <h2>关于组织者</h2>
+        <p>{{ event.charity_description }}</p>
+    </div>
+    
+    <div class="event-detail-actions">
+        {% if is_registered %}
+            <div class="registration-status">
+                <p>您已注册此活动</p>
+                <p>状态：
+                    <span class="status-badge status-{{ registration_status }}">
+                        {% if registration_status == 'pending' %}
+                            待审核
+                        {% elif registration_status == 'approved' %}
+                            已批准
+                        {% elif registration_status == 'rejected' %}
+                            已拒绝
+                        {% elif registration_status == 'completed' %}
+                            已完成
+                        {% endif %}
+                    </span>
+                </p>
+                
+                {% if registration_status == 'pending' %}
+                    <form action="{{ url_for('volunteer.cancel_registration', event_id=event.id) }}" method="post">
+                        <button type="submit" class="btn secondary">取消注册</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <form action="{{ url_for('volunteer.register_event', event_id=event.id) }}" method="post">
+                <button type="submit" class="btn primary">注册参加</button>
+            </form>
+        {% endif %}
+        
+        <a href="{{ url_for('volunteer.events') }}" class="btn secondary">返回活动列表</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Charity Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="{{ url_for('main.index') }}">Charity Platform</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                    {% if session.user_type == 'admin' %}
+                        <li><a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a></li>
+                        <li><a href="{{ url_for('admin.user_management') }}">User Management</a></li>
+                        <li><a href="{{ url_for('admin.event_approval') }}">Event Approval</a></li>
+                    {% elif session.user_type == 'volunteer' %}
+                        <li><a href="{{ url_for('volunteer.dashboard') }}">Volunteer Dashboard</a></li>
+                        <li><a href="{{ url_for('volunteer.events') }}">Browse Events</a></li>
+                        <li><a href="{{ url_for('volunteer.my_events') }}">My Events</a></li>
+                        <li><a href="{{ url_for('volunteer.profile') }}">Profile</a></li>
+                    {% elif session.user_type == 'charity' %}
+                        <li><a href="{{ url_for('charity.dashboard') }}">Charity Dashboard</a></li>
+                        <li><a href="{{ url_for('charity.create_event') }}">Create Event</a></li>
+                        <li><a href="{{ url_for('charity.events') }}">Manage Events</a></li>
+                        <li><a href="{{ url_for('charity.volunteers') }}">Volunteer Applications</a></li>
+                        <li><a href="{{ url_for('charity.profile') }}">Organization Profile</a></li>
+                    {% endif %}
+
+                    {% if session.user_id %}
+                        <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('main.login') }}">Login</a></li>
+                        <li><a href="{{ url_for('main.register_volunteer') }}">Volunteer Registration</a></li>
+                        <li><a href="{{ url_for('main.register_charity') }}">Organization Registration</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <span class="close-btn">&times;</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Charity Platform - Connecting Volunteers with Charitable Organizations</p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // 关闭提示消息
+            $('.close-btn').click(function() {
+                $(this).parent().fadeOut();
+            });
+
+            // 自动隐藏提示消息
+            setTimeout(function() {
+                $('.flash-message').fadeOut();
+            }, 5000);
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}慈善机构仪表盘{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>欢迎回来，{{ charity.name }}</h1>
+    <a href="{{ url_for('charity.create_event') }}" class="btn primary">创建新活动</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_events }}</div>
+        <div class="stat-label">已创建活动</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total_volunteers }}</div>
+        <div class="stat-label">参与志愿者</div>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>即将到来的活动</h2>
+    {% if upcoming_events %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>活动名称</th>
+                    <th>时间</th>
+                    <th>地点</th>
+                    <th>状态</th>
+                    <th>注册人数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in upcoming_events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ format_datetime(event.start_time) }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>
+                            <span class="status-badge status-{{ event.status }}">
+                                {% if event.status == 'pending' %}
+                                    待审核
+                                {% elif event.status == 'approved' %}
+                                    已批准
+                                {% elif event.status == 'rejected' %}
+                                    已拒绝
+                                {% elif event.status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ event.registration_count }}</td>
+                        <td>
+                            <a href="{{ url_for('charity.event_details', event_id=event.id) }}" class="btn small">查看详情</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无即将到来的活动</p>
+    {% endif %}
+    
+    <div class="dashboard-actions">
+        <a href="{{ url_for('charity.events') }}" class="btn secondary">查看所有活动</a>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>待审核的志愿者申请</h2>
+    {% if pending_applications %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>志愿者</th>
+                    <th>活动</th>
+                    <th>申请时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in pending_applications %}
+                    <tr>
+                        <td>{{ app.volunteer_name }}</td>
+                        <td>{{ app.event_name }}</td>
+                        <td>{{ format_datetime(app.registered_at) }}</td>
+                        <td>
+                            <form action="{{ url_for('charity.approve_volunteer', registration_id=app.id) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn small">批准</button>
+                            </form>
+                            <form action="{{ url_for('charity.reject_volunteer', registration_id=app.id) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn small">拒绝</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无待审核的志愿者申请</p>
+    {% endif %}
+    
+    <div class="dashboard-actions">
+        <a href="{{ url_for('charity.volunteers') }}" class="btn secondary">查看所有志愿者申请</a>
+    </div>
+</div>
+{% endblock %}

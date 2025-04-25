@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}个人资料 - 志愿者{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>个人资料</h1>
+</div>
+
+<div class="profile-container">
+    <div class="profile-section">
+        <h2>基本信息</h2>
+        <div class="profile-info">
+            <p><strong>用户名：</strong> {{ profile.username }}</p>
+            <p><strong>姓名：</strong> {{ profile.name }}</p>
+            <p><strong>邮箱：</strong> {{ profile.email }}</p>
+            <p><strong>性别：</strong> 
+                {% if profile.gender == 'male' %}
+                    男
+                {% elif profile.gender == 'female' %}
+                    女
+                {% else %}
+                    其他
+                {% endif %}
+            </p>
+            <p><strong>总志愿时间：</strong> {{ profile.total_hours }} 小时</p>
+            <p><strong>账户状态：</strong> 
+                <span class="status-badge status-{{ profile.status }}">
+                    {% if profile.status == 'pending' %}
+                        待审核
+                    {% elif profile.status == 'approved' %}
+                        已批准
+                    {% elif profile.status == 'suspended' %}
+                        已暂停
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+    </div>
+    
+    <div class="profile-section">
+        <h2>编辑资料</h2>
+        <form method="post" action="{{ url_for('volunteer.update_profile') }}">
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input type="text" id="name" name="name" value="{{ profile.name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">性别</label>
+                <select id="gender" name="gender" required>
+                    <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>男</option>
+                    <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>女</option>
+                    <option value="other" {% if profile.gender == 'other' %}selected{% endif %}>其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" value="{{ profile.email }}" required>
+            </div>
+            
+            <h3>修改密码</h3>
+            <div class="form-group">
+                <label for="current_password">当前密码</label>
+                <input type="password" id="current_password" name="current_password">
+            </div>
+            <div class="form-group">
+                <label for="new_password">新密码</label>
+                <input type="password" id="new_password" name="new_password">
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">确认新密码</label>
+                <input type="password" id="confirm_password" name="confirm_password">
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn primary">保存更改</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // 密码验证
+        $('form').submit(function(e) {
+            const currentPassword = $('#current_password').val();
+            const newPassword = $('#new_password').val();
+            const confirmPassword = $('#confirm_password').val();
+            
+            // 如果没有填写密码字段，则跳过密码验证
+            if (!currentPassword && !newPassword && !confirmPassword) {
+                return true;
+            }
+            
+            // 验证所有密码字段都已填写
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                e.preventDefault();
+                alert('如果要修改密码，请填写所有密码字段');
+                return false;
+            }
+            
+            // 验证新密码和确认密码是否一致
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('新密码和确认密码不一致');
+                return false;
+            }
+            
+            // 验证新密码长度
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('新密码长度至少为6个字符');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

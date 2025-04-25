@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}志愿者申请 - 慈善机构{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>志愿者申请</h1>
+</div>
+
+<div class="dashboard-section">
+    <h2>所有申请</h2>
+    {% if applications %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>志愿者姓名</th>
+                    <th>邮箱</th>
+                    <th>活动名称</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                    <tr>
+                        <td>{{ app.volunteer_name }}</td>
+                        <td>{{ app.email }}</td>
+                        <td>{{ app.event_name }}</td>
+                        <td>{{ format_datetime(app.registered_at) }}</td>
+                        <td>
+                            <span class="status-badge status-{{ app.status }}">
+                                {% if app.status == 'pending' %}
+                                    待审核
+                                {% elif app.status == 'approved' %}
+                                    已批准
+                                {% elif app.status == 'rejected' %}
+                                    已拒绝
+                                {% elif app.status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {% if app.status == 'pending' %}
+                                <form action="{{ url_for('charity.approve_volunteer', registration_id=app.id) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn small">批准</button>
+                                </form>
+                                <form action="{{ url_for('charity.reject_volunteer', registration_id=app.id) }}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn small">拒绝</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">暂无志愿者申请</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('charity.dashboard') }}" class="btn secondary">返回仪表盘</a>
+</div>
+{% endblock %}

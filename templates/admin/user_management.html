@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}用户管理 - 管理员{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>用户管理</h1>
+</div>
+
+<div class="filter-form">
+    <h3>筛选用户</h3>
+    <form method="get" action="{{ url_for('admin.user_management') }}">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="type">用户类型</label>
+                <select id="type" name="type">
+                    <option value="all" {% if current_type == 'all' %}selected{% endif %}>所有类型</option>
+                    <option value="volunteer" {% if current_type == 'volunteer' %}selected{% endif %}>志愿者</option>
+                    <option value="charity" {% if current_type == 'charity' %}selected{% endif %}>慈善机构</option>
+                    <option value="admin" {% if current_type == 'admin' %}selected{% endif %}>管理员</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="status">状态</label>
+                <select id="status" name="status">
+                    <option value="all" {% if current_status == 'all' %}selected{% endif %}>所有状态</option>
+                    <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>待审核</option>
+                    <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>已批准</option>
+                    <option value="suspended" {% if current_status == 'suspended' %}selected{% endif %}>已暂停</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">筛选</button>
+            <a href="{{ url_for('admin.user_management') }}" class="btn secondary">重置</a>
+        </div>
+    </form>
+</div>
+
+<div class="dashboard-section">
+    <h2>用户列表</h2>
+    {% if users %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>用户类型</th>
+                    <th>名称/机构名</th>
+                    <th>状态</th>
+                    <th>注册时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.user_type == 'volunteer' %}
+                                志愿者
+                            {% elif user.user_type == 'charity' %}
+                                慈善机构
+                            {% elif user.user_type == 'admin' %}
+                                管理员
+                            {% endif %}
+                        </td>
+                        <td>{{ user.profile_name if user.profile_name else '-' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ user.status }}">
+                                {% if user.status == 'pending' %}
+                                    待审核
+                                {% elif user.status == 'approved' %}
+                                    已批准
+                                {% elif user.status == 'suspended' %}
+                                    已暂停
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ format_datetime(user.created_at) }}</td>
+                        <td>
+                            {% if user.user_type != 'admin' or user.id != session.user_id %}
+                                {% if user.status != 'approved' %}
+                                    <form action="{{ url_for('admin.update_user_status') }}" method="post" style="display: inline;">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="btn small">批准</button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if user.status != 'suspended' %}
+                                    <form action="{{ url_for('admin.update_user_status') }}" method="post" style="display: inline;">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <input type="hidden" name="status" value="suspended">
+                                        <button type="submit" class="btn small">暂停</button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if user.status != 'pending' %}
+                                    <form action="{{ url_for('admin.update_user_status') }}" method="post" style="display: inline;">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <input type="hidden" name="status" value="pending">
+                                        <button type="submit" class="btn small">待审核</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <span>-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">没有找到符合条件的用户</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn secondary">返回仪表盘</a>
+</div>
+{% endblock %}

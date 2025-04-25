@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ volunteer_count }}</div>
+        <div class="stat-label">Volunteers</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ charity_count }}</div>
+        <div class="stat-label">Organizations</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ event_count }}</div>
+        <div class="stat-label">Events</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ registration_count }}</div>
+        <div class="stat-label">Registrations</div>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>Pending Organizations</h2>
+    {% if pending_charities %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Registration Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for charity in pending_charities %}
+                    <tr>
+                        <td>{{ charity.charity_name }}</td>
+                        <td>{{ charity.username }}</td>
+                        <td>{{ charity.email }}</td>
+                        <td>{{ format_datetime(charity.created_at) }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.update_user_status') }}" method="post" style="display: inline;">
+                                <input type="hidden" name="user_id" value="{{ charity.id }}">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn small">Approve</button>
+                            </form>
+                            <form action="{{ url_for('admin.update_user_status') }}" method="post" style="display: inline;">
+                                <input type="hidden" name="user_id" value="{{ charity.id }}">
+                                <input type="hidden" name="status" value="suspended">
+                                <button type="submit" class="btn small">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">No pending organizations</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-section">
+    <h2>Pending Events</h2>
+    {% if pending_events %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Organization</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in pending_events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.charity_name }}</td>
+                        <td>{{ format_datetime(event.start_time) }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>{{ format_datetime(event.created_at) }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.update_event_status') }}" method="post" style="display: inline;">
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn small">Approve</button>
+                            </form>
+                            <form action="{{ url_for('admin.update_event_status') }}" method="post" style="display: inline;">
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn small">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">No pending events</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-section">
+    <h2>Latest Events</h2>
+    {% if latest_events %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Organization</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in latest_events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.charity_name }}</td>
+                        <td>{{ format_datetime(event.start_time) }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>
+                            <span class="status-badge status-{{ event.status }}">
+                                {% if event.status == 'pending' %}
+                                    待审核
+                                {% elif event.status == 'approved' %}
+                                    已批准
+                                {% elif event.status == 'rejected' %}
+                                    已拒绝
+                                {% elif event.status == 'completed' %}
+                                    已完成
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ format_datetime(event.created_at) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">No events available</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('admin.user_management') }}" class="btn primary">User Management</a>
+    <a href="{{ url_for('admin.event_approval') }}" class="btn primary">Event Approval</a>
+    <a href="{{ url_for('admin.statistics') }}" class="btn secondary">Statistics</a>
+</div>
+{% endblock %}
